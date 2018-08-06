@@ -195,6 +195,7 @@ namespace socketchat
                 {
                     haveMessage = true;
                     messageEnd = i;
+                    break;
                 }
             }
             if (!haveMessage)
@@ -203,7 +204,7 @@ namespace socketchat
             }
             data[messageEnd] = 0;
             callback->receiveMessage((const char *)data);
-            mReceiveBuffer->consume(messageEnd + 1);
+            mReceiveBuffer->consume(messageEnd + 2);
         }
     }
 
