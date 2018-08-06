@@ -1,8 +1,9 @@
-# WSCLIENT
+# SocketChat
 
-This project is a fork of easywsclient which is a simple websockets compatible client
 
-The purpose of this fork is to add support for a server mode as well.
+This is a relatively small application which demonstrates how to write both a client and
+server over sockets.  It implements a simple chat client which sends and recieves messages
+deineated with a carriage return and line-feed, like Redis does.
 
 To build for windows you first need CMAKE installed on your machine.
 
