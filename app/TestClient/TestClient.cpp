@@ -23,16 +23,20 @@ public:
 
 int main(int argc,const char **argv)
 {
-//	testSharedMemory();
-
+    uint32_t portNumber = PORT_NUMBER;
 	const char *host = "localhost";
 	if (argc == 2)
 	{
 		host = argv[1];
+        if (strcmp(host, "redis") == 0)
+        {
+            host = "localhost";
+            portNumber = 6379;
+        }
 	}
 	{
 		socketchat::socketStartup();
-        socketchat::SocketChat *ws = socketchat::SocketChat::create(host,PORT_NUMBER);
+        socketchat::SocketChat *ws = socketchat::SocketChat::create(host,portNumber);
 		if (ws)
 		{
 			printf("Type: 'bye' or 'quit' or 'exit' to close the client out.\r\n");

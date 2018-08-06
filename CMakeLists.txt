@@ -102,7 +102,6 @@ set(TestServer_SOURCES
 
 set(TestClient_SOURCES
 	app/TestClient/TestClient.cpp
-	app/TestClient/TestSharedMemory.cpp
 )
 
 #message("External sources:\n${socketchat_EXTERNAL_SOURCES}")
