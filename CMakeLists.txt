@@ -1,19 +1,19 @@
 cmake_minimum_required(VERSION 3.1)
 
-project(wsclient)
+project(socketchat)
 
 #
 # common directories
 #
 
-set(wsclient_ROOT        ${PROJECT_SOURCE_DIR})
-set(wsclient_EXT_ROOT    ${wsclient_ROOT}/ext)
+set(socketchat_ROOT        ${PROJECT_SOURCE_DIR})
+set(socketchat_EXT_ROOT    ${socketchat_ROOT}/ext)
 
 
 if (WIN32)
-set(extra_INCLUDE    ${wsclient_ROOT}/ext)
+set(extra_INCLUDE    ${socketchat_ROOT}/ext)
 else()
-set(extra_INCLUDE    ${wsclient_ROOT}/ext)
+set(extra_INCLUDE    ${socketchat_ROOT}/ext)
 endif()
 
 #
@@ -74,7 +74,7 @@ endif()
 # sources
 #
 
-file (GLOB_RECURSE wsclient_EXTERNAL_SOURCES
+file (GLOB_RECURSE socketchat_EXTERNAL_SOURCES
     RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
     ext/socketchat/*.h
     ext/socketchat/*.hpp
@@ -105,10 +105,10 @@ set(TestClient_SOURCES
 	app/TestClient/TestSharedMemory.cpp
 )
 
-#message("External sources:\n${wsclient_EXTERNAL_SOURCES}")
+#message("External sources:\n${socketchat_EXTERNAL_SOURCES}")
 
 # deal with subdirectories in external sources
-foreach(source IN LISTS wsclient_EXTERNAL_SOURCES)
+foreach(source IN LISTS socketchat_EXTERNAL_SOURCES)
     get_filename_component(source_path "${source}" PATH)
     string(REPLACE "/" "\\" source_path_msvc "${source_path}")
     source_group("${source_path_msvc}" FILES "${source}")
@@ -133,16 +133,16 @@ endforeach()
 #
 
 add_executable(TestServer
-    ${wsclient_EXTERNAL_SOURCES}
+    ${socketchat_EXTERNAL_SOURCES}
     ${TestServer_SOURCES}
     ${Platform_SOURCES}
     ${Shared_SOURCES}
 )
 
 target_include_directories(TestServer PUBLIC
-    ${wsclient_EXT_ROOT}
-    ${wsclient_EXT_ROOT}/socketchat
-    ${wsclient_ROOT}/include
+    ${socketchat_EXT_ROOT}
+    ${socketchat_EXT_ROOT}/socketchat
+    ${socketchat_ROOT}/include
     ${extra_INCLUDE}
 )
 
@@ -162,16 +162,16 @@ endif()
 
 
 add_executable(TestClient
-    ${wsclient_EXTERNAL_SOURCES}
+    ${socketchat_EXTERNAL_SOURCES}
     ${TestClient_SOURCES}
     ${Platform_SOURCES}
     ${Shared_SOURCES}
 )
 
 target_include_directories(TestClient PUBLIC
-    ${wsclient_EXT_ROOT}
-    ${wsclient_EXT_ROOT}/socketchat
-    ${wsclient_ROOT}/include
+    ${socketchat_EXT_ROOT}
+    ${socketchat_EXT_ROOT}/socketchat
+    ${socketchat_ROOT}/include
     ${extra_INCLUDE}
 )
 
@@ -188,20 +188,20 @@ else()
 endif()
 
 
-set(wsclient_BIN_DIR ${wsclient_ROOT}/bin)
-if (wsclient_BUILD_PLATFORM)
-    set(wsclient_BIN_DIR ${wsclient_BIN_DIR}/${wsclient_BUILD_PLATFORM})
+set(socketchat_BIN_DIR ${socketchat_ROOT}/bin)
+if (socketchat_BUILD_PLATFORM)
+    set(socketchat_BIN_DIR ${socketchat_BIN_DIR}/${socketchat_BUILD_PLATFORM})
 endif()
 if (CMAKE_BUILD_TYPE)
-    set(wsclient_BIN_DIR ${wsclient_BIN_DIR}/${CMAKE_BUILD_TYPE})
+    set(socketchat_BIN_DIR ${socketchat_BIN_DIR}/${CMAKE_BUILD_TYPE})
 endif()
 
 set_target_properties(TestServer
     PROPERTIES
-    RUNTIME_OUTPUT_DIRECTORY ${wsclient_BIN_DIR}
+    RUNTIME_OUTPUT_DIRECTORY ${socketchat_BIN_DIR}
 )
 
 set_target_properties(TestClient
     PROPERTIES
-    RUNTIME_OUTPUT_DIRECTORY ${wsclient_BIN_DIR}
+    RUNTIME_OUTPUT_DIRECTORY ${socketchat_BIN_DIR}
 )

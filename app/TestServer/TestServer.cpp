@@ -2,7 +2,7 @@
 #ifdef _MSC_VER
 #endif
 
-#include "easywsclient.h"
+#include "socketchat.h"
 #include "wsocket.h"
 #include "InputLine.h"
 #include <assert.h>
@@ -12,14 +12,17 @@
 #include <string>
 #include <vector>
 
-using easywsclient::WebSocket;
+//#define PORT_NUMBER 6379    // Redis port number
+#define PORT_NUMBER 3009    // test port number
 
-class ClientConnection : public easywsclient::WebSocketCallback
+using socketchat::SocketChat;
+
+class ClientConnection : public socketchat::SocketChatCallback
 {
 public:
 	ClientConnection(wsocket::Wsocket *client,uint32_t id) : mId(id)
 	{
-		mClient = easywsclient::WebSocket::create(client, true);
+		mClient = socketchat::SocketChat::create(client);
 	}
 
 	virtual ~ClientConnection(void)
@@ -57,23 +60,17 @@ public:
 		}
 	}
 
-	virtual void receiveMessage(const void *data, uint32_t dataLen, bool isAscii) override final
+	virtual void receiveMessage(const char *message) override final
 	{
-		if (isAscii && dataLen < 511)
-		{
-			char temp[512];
-			memcpy(temp, data, dataLen);
-			temp[dataLen] = 0;
-			mHaveMessage = true;
-			mMessage = std::string(temp);
-		}
+		mHaveMessage = true;
+        mMessage = std::string(message);
 	}
 
 	bool isConnected(void)
 	{
 		bool ret = false;
 
-		if (mClient && mClient->getReadyState() != easywsclient::WebSocket::CLOSED)
+		if (mClient && mClient->getReadyState() != socketchat::SocketChat::CLOSED)
 		{
 			ret = true;
 		}
@@ -83,7 +80,7 @@ public:
 
 	bool					mHaveMessage{ false };
 	std::string				mMessage;
-	easywsclient::WebSocket	*mClient{ nullptr };
+	socketchat::SocketChat	*mClient{ nullptr };
 	uint32_t				mId{ 0 };
 };
 
@@ -94,8 +91,7 @@ class SimpleServer
 public:
 	SimpleServer(void)
 	{
-		mServerSocket = wsocket::Wsocket::create(SOCKET_SERVER, 3009);
-//		mServerSocket = wsocket::Wsocket::create(SHARED_SERVER, 3009);
+		mServerSocket = wsocket::Wsocket::create(SOCKET_SERVER, PORT_NUMBER);
 		mInputLine = inputline::InputLine::create();
 		printf("Simple Websockets chat server started.\r\n");
 		printf("Type 'bye', 'quit', or 'exit' to stop the server.\r\n");
@@ -202,14 +198,14 @@ public:
 
 int main()
 {
-	easywsclient::socketStartup();
+	socketchat::socketStartup();
 	// Run the simple server
 	{
 		SimpleServer ss;
 		ss.run();
 	}
 
-	easywsclient::socketShutdown();
+	socketchat::socketShutdown();
 
 	return 0;
 }

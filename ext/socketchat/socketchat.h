@@ -1,9 +1,7 @@
 #pragma  once
 
 // This code comes from:
-// https://github.com/jratcliff63367/wsclient
-// It *originally* came from easywsclient but has been modified
-// https://github.com/dhbaird/easywsclient
+// https://github.com/jratcliff63367/socketchat
 //
 #include <stdint.h>
 
@@ -12,17 +10,17 @@ namespace wsocket
 	class Wsocket;
 }
 
-namespace easywsclient 
+namespace socketchat 
 {
 
 // Pure virtual callback interface to receive messages from the server.
-class WebSocketCallback
+class SocketChatCallback
 {
 public:
-	virtual void receiveMessage(const void *data, uint32_t dataLen, bool isAscii) = 0;
+	virtual void receiveMessage(const char *data) = 0;
 };
 
-class WebSocket 
+class SocketChat 
 {
 public:
 	enum ReadyStateValues 
@@ -33,16 +31,12 @@ public:
 		OPEN 
 	};
 
-	// Factor method to create an instance of the websockets client
-	// 'url' is the URL we are connecting to.
-	// 'origin' is the optional origin
-	// useMask should be true, it mildly XOR encrypts all messages
-	static WebSocket *create(const char *url, const char *origin="",bool useMask=true);
+    static SocketChat *create(const char *host, uint32_t port);
 
 	// Create call for the server when a new client connection is established
-	static WebSocket *create(wsocket::Wsocket *clientSocket, bool useMask = true);
+	static SocketChat *create(wsocket::Wsocket *clientSocket);
 
-	virtual ~WebSocket(void)
+	virtual ~SocketChat(void)
 	{
 	}
 
@@ -54,21 +48,15 @@ public:
 	// Calling the 'poll' routine will process all sends and receives
 	// If any new messages have been received from the sever and you have provided a valid 'callback' pointer, then
 	// it will send incoming messages back through that interface
-	virtual void poll(WebSocketCallback *callback,int32_t timeout = 0) = 0; // timeout in milliseconds
+	virtual void poll(SocketChatCallback *callback,int32_t timeout = 0) = 0; // timeout in milliseconds
 
 	// Send a text message to the server.  Assumed zero byte terminated ASCIIZ string
 	virtual void sendText(const char *str) = 0;
 
-	// Send a binary message with explicit length provided.
-	virtual void sendBinary(const void *data,uint32_t dataLen) = 0;
-
-	// Ping the server
-	virtual void sendPing() = 0;
-
 	// Close the connection
 	virtual void close() = 0;
 
-	// Retreive the current state of the connection
+	// Retrieve the current state of the connection
 	virtual ReadyStateValues getReadyState() const = 0;
 
 	// Returns the total memory used by the transmit and receive buffers
@@ -92,6 +80,6 @@ void socketStartup(void);
 // Shutdown sockets on exit from your app
 void socketShutdown(void);
 
-} // namespace easywsclient
+} // namespace socketchat
 
 

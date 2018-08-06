@@ -2,33 +2,22 @@
 #ifdef _MSC_VER
 #endif
 
-#include "easywsclient.h"
+#include "socketchat.h"
 #include "InputLine.h"
 #include "wplatform.h"
-#include "TestSharedMemory.h"
 
 #include <stdio.h>
 #include <string.h>
 
-class ReceiveData : public easywsclient::WebSocketCallback
+//#define PORT_NUMBER 6379    // Redis port number
+#define PORT_NUMBER 3009    // test port number
+
+class ReceiveData : public socketchat::SocketChatCallback
 {
 public:
-	virtual void receiveMessage(const void *data, uint32_t dataLen, bool isAscii) override final
+	virtual void receiveMessage(const char *message) override final
 	{
-		if (isAscii)
-		{
-			const char *cdata = (const char *)data;
-			printf("Got message:");
-			for (uint32_t i = 0; i < dataLen; i++)
-			{
-				printf("%c", cdata[i]);
-			}
-			printf("\r\n");
-		}
-		else
-		{
-			printf("Got binary data %d bytes long.\r\n", dataLen);
-		}
+        printf("Received: %s\r\n", message);
 	}
 };
 
@@ -42,10 +31,8 @@ int main(int argc,const char **argv)
 		host = argv[1];
 	}
 	{
-		easywsclient::socketStartup();
-		char connectString[512];
-		wplatform::stringFormat(connectString, sizeof(connectString), "ws://%s:3009", host);
-		easywsclient::WebSocket *ws = easywsclient::WebSocket::create(connectString);
+		socketchat::socketStartup();
+        socketchat::SocketChat *ws = socketchat::SocketChat::create(host,PORT_NUMBER);
 		if (ws)
 		{
 			printf("Type: 'bye' or 'quit' or 'exit' to close the client out.\r\n");
@@ -67,6 +54,6 @@ int main(int argc,const char **argv)
 			}
 			delete ws;
 		}
-		easywsclient::socketShutdown();
+		socketchat::socketShutdown();
 	}
 }
